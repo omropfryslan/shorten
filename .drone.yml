@@ -1,0 +1,23 @@
+kind: pipeline
+name: default
+
+steps:
+- name: build-and-update
+  image: docker
+  privileged: true
+  commands:
+    - apk add --no-cache --update curl git
+    - bin/prepare
+    - docker build .
+    - bin/deploy
+  volumes:
+    - name: docker
+      path: /var/run/docker.sock
+  when:
+    branch:
+    - master
+
+volumes:
+- name: docker
+  host:
+    path: /var/run/docker.sock
